@@ -5,11 +5,6 @@ from uuid import uuid4
 from extended_dataclass import dataclass, fromdict
 
 
-@dataclass
-class SampleDc(object):
-    pass
-
-
 class TestExtendedDataclass(TestCase):
     def test_from_dict(self):
 
