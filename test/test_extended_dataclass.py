@@ -1,35 +1,48 @@
-from random import randint
 from unittest import TestCase
-from uuid import uuid4
 
-from extended_dataclass import dataclass, fromdict
+from extended_dataclass import DataClassPlus
 
 
-class TestExtendedDataclass(TestCase):
-    def test_from_dict(self):
-
-        @dataclass
-        class SampleDataclass(object):
+class TestDataClassPlus(TestCase):
+    def test_encode_basic(self):
+        class TestClass(DataClassPlus):
             index: int = 0
-            val: str = 'test'
             index2: int = 1
-
-            def sample_func(self):
-                pass
+            val: str = "test"
+            val2: str = None
 
         sample_dict = {
-            'index': randint(0, 10),
-            'index2': randint(0, 10),
-            'val': str(uuid4()),
-            'val2': str(uuid4())
+            "index": 3,
+            "val": "test2"
         }
 
-        cls = fromdict(SampleDataclass, sample_dict)
-        self.assertTrue(hasattr(cls, 'index'))
-        self.assertTrue(hasattr(cls, 'index2'))
-        self.assertTrue(hasattr(cls, 'val'))
-        self.assertFalse(hasattr(cls, 'val2'))
+        encoded = TestClass().from_dict(sample_dict)
+        # assert that what came out of the dict was set
+        self.assertEqual(sample_dict["index"], encoded.index)
+        self.assertEqual(sample_dict["val"], encoded.val)
+        # assert defaults
+        self.assertEqual(encoded.index2, 1)
+        self.assertIsNone(encoded.val2)
 
-        self.assertEqual(cls.index, sample_dict['index'])
-        self.assertEqual(cls.index2, sample_dict['index2'])
-        self.assertEqual(cls.val, sample_dict['val'])
+    def test_encode_decode_with_subclass(self):
+        class TestSubclass(DataClassPlus):
+            index: int = 3
+
+        class TestClass(DataClassPlus):
+            index: int = 1
+            val: str = "thisisavalue"
+            sub: TestSubclass = None
+            # lst: List[TestSubclass] = field(default_factory=list)
+
+        sample_dict = {
+            "index": 13,
+            "val": "test",
+            "sub": {"index": 4}
+        }
+        encoded = TestClass().from_dict(sample_dict)
+        self.assertEqual(sample_dict["index"], encoded.index)
+        self.assertEqual(sample_dict["val"], encoded.val)
+        self.assertIsInstance(encoded.sub, DataClassPlus)
+        self.assertIsInstance(encoded.sub, TestSubclass)
+        self.assertEqual(sample_dict["sub"]["index"], encoded.sub.index)
+        self.assertDictEqual(sample_dict, encoded.to_dict())
