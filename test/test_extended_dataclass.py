@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from extended_dataclass import DataClassPlus
+from src.extended_dataclass import DataClassPlus
 
 
 class TestDataClassPlus(TestCase):
