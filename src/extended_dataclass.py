@@ -1,5 +1,16 @@
 from dataclasses import dataclass
+from enum import Enum, IntEnum
 from typing import Dict, Iterable
+
+
+class EnumEncodingSetting(IntEnum):
+    VALUE = 0
+    NAME = 1
+
+
+class EncodingSettingException(Exception):
+    def __init__(self, *args):
+        super().__init__(*args)
 
 
 @dataclass
@@ -18,6 +29,15 @@ class DataClassPlus:
                     v = target_subtype(vals)
             elif issubclass(target_type, DataClassPlus):
                 v = target_type().from_dict(v)
+            elif issubclass(target_type, Enum):
+                if self._enum_encoding_setting() == EnumEncodingSetting.VALUE:
+                    v = target_type(v)
+                elif self._enum_encoding_setting() == EnumEncodingSetting.NAME:
+                    v = target_type[v]
+                else:
+                    raise EncodingSettingException(
+                        f"Unexpected enum encoding type: {self._enum_encoding_setting()}"
+                    )
             setattr(self, k, v)
         return self
 
@@ -33,8 +53,25 @@ class DataClassPlus:
                     vals.append(val)
                 dct[k] = vals
                 continue
-            if isinstance(v, DataClassPlus):
+            elif isinstance(v, DataClassPlus):
                 dct[k] = v.to_dict()
                 continue
+            elif isinstance(v, Enum):
+                if self._enum_encoding_setting() == EnumEncodingSetting.VALUE:
+                    v = v.value
+                elif self._enum_encoding_setting() == EnumEncodingSetting.NAME:
+                    v = v.name
+                else:
+                    raise EncodingSettingException(
+                        f"Unexpected enum encoding type: {self._enum_encoding_setting()}"
+                    )
             dct[k] = v
         return dct
+
+    @staticmethod
+    def _enum_encoding_setting():
+        """
+        Override this to return EnumEncodingSetting.NAME if you want enum names instead of values.
+        :return: EnumEncodingSetting.
+        """
+        return EnumEncodingSetting.VALUE
