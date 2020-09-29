@@ -1,6 +1,7 @@
 from dataclasses import field
+from datetime import datetime, timedelta
 from enum import IntEnum
-from typing import List
+from typing import List, Union
 from unittest import TestCase
 
 from src.extended_dataclass import DataClassPlus, EnumEncodingSetting
@@ -93,3 +94,48 @@ class TestDataClassPlus(TestCase):
 
         self.assertDictEqual(test_value, encoded_value.to_dict())
         self.assertDictEqual(test_name, encoded_name.to_dict())
+
+    def test_with_datetime(self):
+        class TestClass(DataClassPlus):
+            test_date: datetime = None
+            test_date2: datetime = None
+
+        now = datetime.utcnow()
+        sample_data = {
+            "test_date": now.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            "test_date2": (now - timedelta(seconds=10)).strftime(
+                "%Y-%m-%dT%H:%M:%S.%fZ"
+            ),
+        }
+
+        encoded = TestClass().from_dict(sample_data)
+        self.assertEqual(encoded.test_date, now)
+        self.assertEqual(encoded.test_date2, now - timedelta(seconds=10))
+
+        self.assertDictEqual(encoded.to_dict(), sample_data)
+
+    def test_datetime_custom_encode_function(self):
+        epoch = datetime(1970, 1, 1)
+
+        class TestClass(DataClassPlus):
+            test_date: datetime = None
+            test_date2: datetime = None
+            test_date3: datetime = None
+
+            @staticmethod
+            def _encode_datetime(dt: datetime) -> Union[str, int, float]:
+                return (dt - epoch).total_seconds()
+
+            @staticmethod
+            def _decode_datetime(encoded_dt: Union[str, int, float]) -> datetime:
+                return datetime.utcfromtimestamp(encoded_dt)
+
+        now = datetime.utcnow()
+        now_epoch = (now - epoch).total_seconds()
+        sample_data = {"test_date": now_epoch, "test_date2": now_epoch - 10}
+
+        encoded = TestClass().from_dict(sample_data)
+        self.assertEqual(encoded.test_date, now)
+        self.assertEqual(encoded.test_date2, now - timedelta(seconds=10))
+
+        self.assertDictEqual(encoded.to_dict(), sample_data)

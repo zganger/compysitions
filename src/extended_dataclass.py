@@ -1,6 +1,7 @@
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum, IntEnum
-from typing import Dict, Iterable
+from typing import Dict, Iterable, Union
 
 
 class EnumEncodingSetting(IntEnum):
@@ -38,6 +39,8 @@ class DataClassPlus:
                     raise EncodingSettingException(
                         f"Unexpected enum encoding type: {self._enum_encoding_setting()}"
                     )
+            elif issubclass(target_type, datetime):
+                v = self._decode_datetime(v)
             setattr(self, k, v)
         return self
 
@@ -65,13 +68,37 @@ class DataClassPlus:
                     raise EncodingSettingException(
                         f"Unexpected enum encoding type: {self._enum_encoding_setting()}"
                     )
+            elif isinstance(v, datetime):
+                v = self._encode_datetime(v)
             dct[k] = v
         return dct
 
     @staticmethod
-    def _enum_encoding_setting():
+    def _enum_encoding_setting() -> EnumEncodingSetting:
         """
         Override this to return EnumEncodingSetting.NAME if you want enum names instead of values.
         :return: EnumEncodingSetting.
         """
         return EnumEncodingSetting.VALUE
+
+    @staticmethod
+    def _encode_datetime(dt: datetime) -> Union[str, int, float]:
+        """
+        Encodes datetimes to desired data format. Override this to provide your own format.
+        The result should be json encodable; typically either a date string or an epoch time in numerical format.
+        Default is ISO-8601 standard format.
+        :param dt: the datetime object to format.
+        :return: formatted data representing the provided datetime object.
+        """
+        return dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
+    @staticmethod
+    def _decode_datetime(encoded_dt: Union[str, int, float]) -> datetime:
+        """
+        Decodes datetime from the data format to datetimes for interaction on your class.
+        Will likely expect either a date string or an epoch time in numerical format.
+        Default setting is to expect ISO-8601 standard format strings.
+        :param encoded_dt: the datetime we expect.
+        :return: a datetime object representative of the encoded data provided.
+        """
+        return datetime.strptime(encoded_dt, "%Y-%m-%dT%H:%M:%S.%fZ")
