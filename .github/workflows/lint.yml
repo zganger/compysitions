@@ -28,3 +28,6 @@ jobs:
     - name: Lint with Black
       run: |
         black .
+    - name: Check MyPy
+      run: |
+        mypy src
