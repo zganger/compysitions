@@ -126,9 +126,8 @@ class TestDataClassPlus(TestCase):
             def _encode_datetime(dt: datetime) -> Union[str, int, float]:
                 return (dt - epoch).total_seconds()
 
-            @staticmethod
-            def _decode_datetime(encoded_dt: Union[str, int, float]) -> datetime:
-                return datetime.utcfromtimestamp(encoded_dt)
+        # note a custom decode may be desired as well in the case of non-utc time
+        # or a string encoding that does not conform to ISO-8601
 
         now = datetime.utcnow()
         now_epoch = (now - epoch).total_seconds()

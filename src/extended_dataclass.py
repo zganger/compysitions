@@ -98,7 +98,13 @@ class DataClassPlus:
         Decodes datetime from the data format to datetimes for interaction on your class.
         Will likely expect either a date string or an epoch time in numerical format.
         Default setting is to expect ISO-8601 standard format strings.
+
+        Note: typing on this method is designed to allow overrides.
+          While numeric timestamps may be decoded properly by this default function, expected usage is ISO-8601.
+
         :param encoded_dt: the datetime we expect.
         :return: a datetime object representative of the encoded data provided.
         """
-        return datetime.strptime(encoded_dt, "%Y-%m-%dT%H:%M:%S.%fZ")
+        if isinstance(encoded_dt, str):
+            return datetime.strptime(encoded_dt, "%Y-%m-%dT%H:%M:%S.%fZ")
+        return datetime.utcfromtimestamp(float(encoded_dt))
