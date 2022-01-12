@@ -4,12 +4,12 @@ from enum import IntEnum
 from typing import List, Union
 from unittest import TestCase
 
-from src.extended_dataclass import DataClassPlus, EnumEncodingSetting
+from src.compysitions import Compysition, EnumEncodingSetting
 
 
-class TestDataClassPlus(TestCase):
+class TestCompysition(TestCase):
     def test_encode_basic(self):
-        class TestClass(DataClassPlus):
+        class TestClass(Compysition):
             index: int = 0
             index2: int = 1
             val: str = "test"
@@ -26,10 +26,10 @@ class TestDataClassPlus(TestCase):
         self.assertIsNone(encoded.val2)
 
     def test_encode_decode_with_subclass(self):
-        class TestSubclass(DataClassPlus):
+        class TestSubclass(Compysition):
             index: int = 3
 
-        class TestClass(DataClassPlus):
+        class TestClass(Compysition):
             index: int = 1
             val: str = "thisisavalue"
             sub: TestSubclass = None
@@ -38,16 +38,16 @@ class TestDataClassPlus(TestCase):
         encoded = TestClass().from_dict(sample_dict)
         self.assertEqual(sample_dict["index"], encoded.index)
         self.assertEqual(sample_dict["val"], encoded.val)
-        self.assertIsInstance(encoded.sub, DataClassPlus)
+        self.assertIsInstance(encoded.sub, Compysition)
         self.assertIsInstance(encoded.sub, TestSubclass)
         self.assertEqual(sample_dict["sub"]["index"], encoded.sub.index)
         self.assertDictEqual(sample_dict, encoded.to_dict())
 
     def test_with_iterable(self):
-        class TestSubclass(DataClassPlus):
+        class TestSubclass(Compysition):
             index: int = 3
 
-        class TestClass(DataClassPlus):
+        class TestClass(Compysition):
             index: int = 0
             collection: List[TestSubclass] = field(default_factory=list)
 
@@ -67,12 +67,12 @@ class TestDataClassPlus(TestCase):
             TESTNAME = 0
             TESTNAME2 = 1
 
-        class TestClassValueSetting(DataClassPlus):
+        class TestClassValueSetting(Compysition):
             test_1: TestEnum = None
             test_2: TestEnum = None
             test_3: TestEnum = None
 
-        class TestClassNameSetting(DataClassPlus):
+        class TestClassNameSetting(Compysition):
             test_1: TestEnum = None
             test_2: TestEnum = None
             test_3: TestEnum = None
@@ -96,7 +96,7 @@ class TestDataClassPlus(TestCase):
         self.assertDictEqual(test_name, encoded_name.to_dict())
 
     def test_with_datetime(self):
-        class TestClass(DataClassPlus):
+        class TestClass(Compysition):
             test_date: datetime = None
             test_date2: datetime = None
 
@@ -117,7 +117,7 @@ class TestDataClassPlus(TestCase):
     def test_datetime_custom_encode_function(self):
         epoch = datetime(1970, 1, 1)
 
-        class TestClass(DataClassPlus):
+        class TestClass(Compysition):
             test_date: datetime = None
             test_date2: datetime = None
             test_date3: datetime = None

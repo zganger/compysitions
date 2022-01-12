@@ -15,7 +15,7 @@ class EncodingSettingException(Exception):
 
 
 @dataclass
-class DataClassPlus:
+class Compysition:
     def from_dict(self, dct: Dict):
         for k, v in dct.items():
             target_type = self.__annotations__[k]
@@ -25,10 +25,10 @@ class DataClassPlus:
                     # assuming only one arg for now - this could have many?
                     target_member_type = target_type.__args__[0]
                     vals = v
-                    if issubclass(target_member_type, DataClassPlus):
+                    if issubclass(target_member_type, Compysition):
                         vals = [target_member_type().from_dict(val) for val in vals]
                     v = target_subtype(vals)
-            elif issubclass(target_type, DataClassPlus):
+            elif issubclass(target_type, Compysition):
                 v = target_type().from_dict(v)
             elif issubclass(target_type, Enum):
                 if self._enum_encoding_setting() == EnumEncodingSetting.VALUE:
@@ -50,13 +50,13 @@ class DataClassPlus:
             if isinstance(v, Iterable) and not isinstance(v, str):
                 vals = list()
                 for val in v:
-                    if isinstance(val, DataClassPlus):
+                    if isinstance(val, Compysition):
                         vals.append(val.to_dict())
                         continue
                     vals.append(val)
                 dct[k] = vals
                 continue
-            elif isinstance(v, DataClassPlus):
+            elif isinstance(v, Compysition):
                 dct[k] = v.to_dict()
                 continue
             elif isinstance(v, Enum):
