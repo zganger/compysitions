@@ -2,8 +2,9 @@ from setuptools import setup
 
 setup(
     name='compysitions',
-    version='0.0.1',
-    packages=[],
+    version='0.0.2',
+    packages=['compysitions'],
+    package_dir={'compysitions': 'src'},
     url='https://github.com/zganger/compysitions',
     license='',
     author='zganger',
