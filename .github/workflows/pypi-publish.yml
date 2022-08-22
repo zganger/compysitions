@@ -22,7 +22,7 @@ jobs:
         python -m build
     - name: Check packages
       run: |
-        python -m twine check
+        python -m twine check dist/*
     - name: Publish
       run: |
         python -m twine upload dist/* -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
