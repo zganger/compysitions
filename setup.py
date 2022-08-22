@@ -7,7 +7,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='compysitions',
-    version='0.0.2',
+    version='0.0.3',
     packages=['compysitions'],
     package_dir={'compysitions': 'src'},
     url='https://github.com/zganger/compysitions',
