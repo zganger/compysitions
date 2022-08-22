@@ -14,8 +14,21 @@ class EncodingSettingException(Exception):
         super().__init__(*args)
 
 
+class TypeAssignmentException(Exception):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+
 @dataclass
 class Compysition:
+    def __init__(self, **kwargs):
+        for arg, arg_val in kwargs.items():
+            if arg in self.__annotations__:
+                if not isinstance(arg_val, self.__annotations__[arg]):
+                    raise TypeAssignmentException(f"Attempted to assign {arg} to {type(arg_val)}, "
+                                                  f"while its type should be {self.__annotations__[arg]}")
+                self.__setattr__(arg, arg_val)
+
     def from_dict(self, dct: Dict):
         for k, v in dct.items():
             target_type = self.__annotations__[k]

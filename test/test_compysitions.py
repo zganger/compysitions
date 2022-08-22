@@ -4,7 +4,7 @@ from enum import IntEnum
 from typing import List, Union
 from unittest import TestCase
 
-from src.compysitions import Compysition, EnumEncodingSetting
+from src.compysitions import Compysition, EnumEncodingSetting, TypeAssignmentException
 
 
 class TestCompysition(TestCase):
@@ -138,3 +138,19 @@ class TestCompysition(TestCase):
         self.assertEqual(encoded.test_date2, now - timedelta(seconds=10))
 
         self.assertDictEqual(encoded.to_dict(), sample_data)
+
+    def test_init(self):
+        class TestClass(Compysition):
+            test_str: str = None
+            test_int: int = 0
+
+        test_obj = TestClass(test_str="hello")
+        self.assertEqual(test_obj.test_str, "hello")
+        self.assertEqual(test_obj.test_int, 0)
+
+    def test_init_with_invalid_type_assignment(self):
+        class TestClass(Compysition):
+            test_str: str = None
+
+        with self.assertRaises(TypeAssignmentException):
+            TestClass(test_str=1500)
