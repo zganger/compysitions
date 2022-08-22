@@ -1,1 +1,1 @@
-from .compysitions import *
+from .compysitions import *  # noqa
