@@ -1,5 +1,5 @@
 from dataclasses import field
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from enum import IntEnum
 from typing import List, Union
 from unittest import TestCase
@@ -100,7 +100,7 @@ class TestCompysition(TestCase):
             test_date: datetime = None
             test_date2: datetime = None
 
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         sample_data = {
             "test_date": now.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "test_date2": (now - timedelta(seconds=10)).strftime(
@@ -115,7 +115,7 @@ class TestCompysition(TestCase):
         self.assertDictEqual(encoded.to_dict(), sample_data)
 
     def test_datetime_custom_encode_function(self):
-        epoch = datetime(1970, 1, 1)
+        epoch = datetime(1970, 1, 1, tzinfo=UTC)
 
         class TestClass(Compysition):
             test_date: datetime = None
@@ -129,7 +129,7 @@ class TestCompysition(TestCase):
         # note a custom decode may be desired as well in the case of non-utc time
         # or a string encoding that does not conform to ISO-8601
 
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         now_epoch = (now - epoch).total_seconds()
         sample_data = {"test_date": now_epoch, "test_date2": now_epoch - 10}
 

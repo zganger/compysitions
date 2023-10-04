@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, UTC
 from enum import Enum, IntEnum
 from typing import Dict, Iterable, Union
 
@@ -119,5 +119,5 @@ class Compysition:
         :return: a datetime object representative of the encoded data provided.
         """
         if isinstance(encoded_dt, str):
-            return datetime.strptime(encoded_dt, "%Y-%m-%dT%H:%M:%S.%fZ")
-        return datetime.utcfromtimestamp(float(encoded_dt))
+            return datetime.strptime(encoded_dt, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC)
+        return datetime.fromtimestamp(float(encoded_dt), UTC)
