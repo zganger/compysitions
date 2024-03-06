@@ -2,6 +2,8 @@
 
 ![](https://github.com/zganger/extended_dataclass/workflows/Test/badge.svg)
 
+[![Coverage Status](https://coveralls.io/repos/github/zganger/compysitions/badge.svg?branch=master)](https://coveralls.io/github/zganger/compysitions?branch=master)
+
 ## Project Overview
 Python [dataclasses](https://docs.python.org/3/library/dataclasses.html "Dataclass documentation") are used to represent data in a python object.
 They support decoding some data to dict out of the box, but do not handle all types neatly nor support loading to an instance from dict.
