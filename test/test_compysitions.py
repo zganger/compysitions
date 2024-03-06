@@ -50,8 +50,9 @@ class TestCompysition(TestCase):
         class TestClass(Compysition):
             index: int = 0
             collection: List[TestSubclass] = field(default_factory=list)
+            collection2: List[str] = field(default_factory=list)
 
-        sample_dict = {"index": 13, "collection": [{"index": 4}, {"index": 16}]}
+        sample_dict = {"index": 13, "collection": [{"index": 4}, {"index": 16}], "collection2": ["test", "test2"]}
 
         encoded = TestClass().from_dict(sample_dict)
         self.assertEqual(encoded.index, 13)
@@ -60,6 +61,7 @@ class TestCompysition(TestCase):
         self.assertTrue(
             all(isinstance(obj, TestSubclass) for obj in encoded.collection)
         )
+        self.assertEqual(encoded.collection2, sample_dict["collection2"])
         self.assertDictEqual(sample_dict, encoded.to_dict())
 
     def test_with_enum(self):
