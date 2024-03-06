@@ -22,3 +22,6 @@ jobs:
     - name: unittest
       run: |
         pytest --cov
+    - name: Coveralls coverage submission
+      uses: coverallsapp/github-action@v2
+
