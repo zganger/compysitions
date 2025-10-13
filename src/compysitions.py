@@ -23,15 +23,15 @@ class TypeAssignmentException(Exception):
 class Compysition:
     def __init__(self, **kwargs):
         for arg, arg_val in kwargs.items():
-            if arg in self.__annotations__:
-                if not isinstance(arg_val, self.__annotations__[arg]):
+            if arg in self.__class__.__annotations__:
+                if not isinstance(arg_val, self.__class__.__annotations__[arg]):
                     raise TypeAssignmentException(f"Attempted to assign {arg} to {type(arg_val)}, "
-                                                  f"while its type should be {self.__annotations__[arg]}")
+                                                  f"while its type should be {self.__class__.__annotations__[arg]}")
                 self.__setattr__(arg, arg_val)
 
     def from_dict(self, dct: Dict):
         for k, v in dct.items():
-            target_type = self.__annotations__[k]
+            target_type = self.__class__.__annotations__[k]
             if hasattr(target_type, "__origin__"):
                 target_subtype = target_type.__origin__
                 if issubclass(target_subtype, Iterable):
